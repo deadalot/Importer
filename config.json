@@ -1,0 +1,7 @@
+{
+    "host":"localhost",
+    "port":"8081",    
+    "uploadFolder":"/upload",
+    "processingFolder":"/processing",
+    "historyFolder":"/history"
+}
