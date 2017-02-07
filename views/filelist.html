@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <title>{{title}}</title>
     <link rel="stylesheet" href="../css/home.css">
+    
 </head>
 <body>
     <div class="up-container">
@@ -12,13 +13,17 @@
             <p>Upload .csv files and import to database</p>
         </div>
         <div class="up-fileupload">
-            <input type="file" class="upFile" autocomplete="off">
-            <button id="uploadFile">Upload</button>
+            <form ref="uploadForm" id="uploadForm" action="http://localhost:8081/upload" method="POST" encType="multipart/form-data">
+                <input type="file" name="uppFile" autocomplete="off">
+                <input type='submit' value='Upload' />
+            </form>
+            {{fileError}}
         </div>
         <div class="up-filelist">
-            <ul class="filelist">test.csv</ul>
-            <ul class="filelist">annattest.csv</ul>
-            <ul class="filelist">reimport.csv</ul>
+            Uploaded files:
+            {{#files}}
+                <ul class="filelist">{{.}}</ul>
+            {{/files}}            
         </div>
     </div>
 
