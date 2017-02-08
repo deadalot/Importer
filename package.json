@@ -21,6 +21,7 @@
     "express-fileupload": "0.0.6",
     "fs": "0.0.1-security",
     "hogan-express": "^0.5.2",
+    "junk": "^2.0.0",
     "mysql": "^2.13.0"
   }
 }

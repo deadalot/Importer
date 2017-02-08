@@ -4,7 +4,8 @@ var express = require('express'),
     path = require('path'),
     fs = require('fs'),
     fileUpload = require('express-fileupload'),
-    mysql      = require('mysql')
+    mysql      = require('mysql'),
+    junk = require('junk')
 
 
 var connection = mysql.createConnection(config.db);
@@ -26,7 +27,7 @@ app.use(fileUpload());
 
 init(config, fs);
 
-require('./routes/routes.js')(express, app, config);
+require('./routes/routes.js')(express, app, config, junk, connection);
 
 app.listen(config.port, function(){
 console.log('Server running on Port', config.port);
