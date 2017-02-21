@@ -5,16 +5,17 @@ var express = require('express'),
     fs = require('fs'),
     fileUpload = require('express-fileupload'),
     mysql      = require('mysql'),
-    junk = require('junk')
+    junk = require('junk'),
+    csvParser = require('csv-parse');
 
 
 var connection = mysql.createConnection(config.db);
 
 connection.connect(function(err) {
   if(err){
-      console.log('error connecting to DB:', err);
+      console.log('[APP] Error connecting to Database:', err);
   }else{
-      console.log('connected to DB');
+      console.log('[APP] Connected to Database');
   }
 });
 
@@ -27,23 +28,23 @@ app.use(fileUpload());
 
 init(config, fs);
 
-require('./routes/routes.js')(express, app, config, junk, connection);
+require('./routes/routes.js')(express, app, config, junk, connection, csvParser);
 
 app.listen(config.port, function(){
-console.log('Server running on Port', config.port);
+console.log('[APP] Server running on Port', config.port);
 
 })
 
 function init(config, fs){
 
-    console.log("Check if import folders exist");
+    console.log("[INIT] Check if import folders exist");
     
     if (!fs.existsSync(__dirname + config.importFolder)) {
         fs.mkdir(__dirname + config.importFolder, function(err){
             if(err){
                 return console.error(err);
             }
-            console.log("ImportFolder successfully created");
+            console.log("[INIT] ImportFolder successfully created");
         })
     }  
 
@@ -53,7 +54,7 @@ function init(config, fs){
             if(err){
                 return console.error(err);
             }
-            console.log("uploadFolder successfully created");
+            console.log("[INIT] uploadFolder successfully created");
         })
     }    
     if (!fs.existsSync(__dirname + config.importFolder + config.processingFolder)) {
@@ -61,7 +62,7 @@ function init(config, fs){
             if(err){
                 return console.error(err);
             }
-            console.log("processingFolder successfully created");
+            console.log("[INIT] processingFolder successfully created");
         })
     }  
     if (!fs.existsSync(__dirname + config.importFolder + config.historyFolder)) {
@@ -69,7 +70,7 @@ function init(config, fs){
             if(err){
                 return console.error(err);
             }
-            console.log("historyFolder successfully created");
+            console.log("[INIT] historyFolder successfully created");
         })
     }  
 

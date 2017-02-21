@@ -17,6 +17,8 @@
   },
   "homepage": "https://github.com/deadalot/Importer#readme",
   "dependencies": {
+    "csv-parse": "^1.2.0",
+    "dateformat": "^2.0.0",
     "express": "^4.14.1",
     "express-fileupload": "0.0.6",
     "fs": "0.0.1-security",

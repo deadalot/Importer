@@ -1,10 +1,9 @@
 {
     "host":"localhost",
     "port":"8081",   
-    "importFolder":"/import", 
-    "uploadFolder":"/upload",
-    "processingFolder":"/processing",
-    "historyFolder":"/history",
+    "uploadDir":"./import/upload/",
+    "processDir":"./import/processing/",
+    "historyDir":"./import/history/",
     "db":{
         "host":"localhost",
         "user":"root",

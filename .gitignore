@@ -32,6 +32,7 @@ coverage
 build/Release
 
 # Dependency directories
+import
 node_modules
 jspm_packages
 
