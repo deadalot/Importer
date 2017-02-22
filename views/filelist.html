@@ -18,13 +18,13 @@
                 <input type='submit' value='Upload' />
             </form>            
         </div>
-        
-        {{#error}}
-        <div class="up-error" style="color:red;">{{.}}</div>
-        {{/error}}   
         {{#status}}
         <div class="up-status" style="color:green;">{{.}}</div>
         {{/status}}   
+        {{#error}}
+        <div class="up-error" style="color:red;">{{.}}</div>
+        {{/error}}   
+       
         
         <div class="up-filelist">
             Uploaded files:

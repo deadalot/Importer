@@ -58,8 +58,9 @@ module.exports = function(express, app, config, junk,connection,csvParser){
                     if(err){
                         console.log('[ROUTES] Error during import');                        
                         errorMsg.push(err);                        
-                        app.locals.context =  {error: errorMsg, files:listDirectory(config.uploadDir)};       
-                        res.redirect(303, '/filelist');    
+                        //app.locals.context =  {error: errorMsg, files:listDirectory(config.uploadDir)};       
+                        //res.redirect(303, '/filelist');
+                        
 
                     }if(status){
                         console.log('[ROUTES] Import success');
