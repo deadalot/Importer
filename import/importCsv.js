@@ -42,15 +42,74 @@ var importCsv = function importCsv(file, connection, callback){
                             console.log('[IMPORT] Error parsing CSV' + err);
                             return callback(errorMsg,statusMsg);   
                         } else {
-                            console.log('[IMPORT] CSV data: ' + data);
+                            console.log('[IMPORT] CSV data: ' + JSON.stringify(data));                           
                             
-                            var post  = {Filename: importFile, TotalNumberOfRows: 0, RowsWithErrors:0};
+                            var post  = {Filename: importFile};
                             var query = connection.query('INSERT INTO File SET ?', post, function(err, result) {
                                 if(err){
-                                    console.log('[IMPORT] Error querry: ' + data);
+                                    console.log('[IMPORT] Error querry: ' + err);
+                                    errorMsg.push('ERROR File already imported');
                                     return callback(errorMsg,statusMsg);
                                 }else{
-                                    console.log('[IMPORT] Querry OK: ' + data);
+                                    console.log('[IMPORT] Querry OK: ' + JSON.stringify(result));
+                                    var id;
+                                    var date;
+                                    var description;
+                                    var amount;                                    
+                                    var nrErrors = [];
+
+                                    for(var i = 1; i < data.length; i++){
+                                        
+                                        id = data[i][0];
+                                        date = data[i][1];
+                                        description = data[i][2];
+                                        amount = data[i][3];
+
+                                        //VERIFY
+
+                                        var post  = {
+                                            Description: description, 
+                                            CreationDate: '2015-11-11'
+                                        };
+                                        var query = connection.query('INSERT INTO TransactionDescription SET ?', post, function(err, result) {
+                                            if(err){
+                                                console.log('[IMPORT] Duplicate description! ' + err);
+                                                errorMsg.push('WARN Duplicate Description');
+                                                //return callback(errorMsg,statusMsg);
+                                            }else{
+                                                console.log('[IMPORT] Added description');
+                                            }
+                                        });
+                                        
+                                        var query = connection.query('SELECT  TransactionDescriptionPK FROM TransactionDescription WHERE Description = ?', [description], function(err, result) {
+                                            if(err){
+                                            }else{
+                                              console.log('TransactionDescriptionID = ' + results[0].TransactionDescriptionPK );
+                                                var post  = {
+                                                TransactionID: id, 
+                                                TransactionDate: date,
+                                                Amount:amount,
+                                                CreationDate: dateFormat(new Date(), 'yyyy-mm-dd HH:MM:ss'),
+                                                TransactionDescriptionPK:results[0].TransactionDescriptionPK,
+                                                FilePK:importFile
+                                            };
+
+                                            var query = connection.query('INSERT INTO Transaction SET ?', post, function(err, result) {
+                                                if(err){
+                                                    console.log('[IMPORT] ERROR inserting transaction ' + err);
+                                                    errorMsg.push('Error transaction1!');
+                                                    //return callback(errorMsg,statusMsg);
+                                                }else{
+                                                    console.log('[IMPORT] Added description');
+                                                }
+                                            });
+                                        }
+
+                                        });
+
+                                    }//for every row
+
+
 
                                     //** Move file to history folder.                                
                                     setMsg(statusMsg, 'Moving ' + importFile + ' to: ' + config.historyDir);    
@@ -62,7 +121,7 @@ var importCsv = function importCsv(file, connection, callback){
                                             //all is well                                            
                                             setMsg(statusMsg, (errorMsg.length > 0) ? 'Import finished with the following error(s): ' : "Import finished without exceptions");
                                             console.log('[IMPORT] Import DONE of file ' + importFile); 
-                                            console.log('[IMPORT] message: ' + JSON.stringify(statusMsg));    
+                                            //console.log('[IMPORT] message: ' + JSON.stringify(statusMsg));    
                                             return callback(errorMsg, statusMsg);
                                         }
                                     });//rename history                           
