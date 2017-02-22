@@ -1,7 +1,6 @@
 module.exports = function(express, app, config, junk,connection,csvParser){
     var router = express.Router();
     var dateFormat = require('dateformat');
-
     var importCsv = require('../import/importCsv.js');
 
     // *** index.html
@@ -10,28 +9,28 @@ module.exports = function(express, app, config, junk,connection,csvParser){
     })
 
 
-    function fileListCtrl(req, res){
-        
-    }
     // *** List files and upload
-    router.get('/filelist', function(req, res, next){        
-        res.render('filelist', {files:listDirectory(config.uploadDir)});
-    })
+    router.get('/filelist', function(req, res){
+        var context = app.locals.context; 
+        console.log('[ROUTER] context: ' + JSON.stringify(context));       
+        if(!context){
+            console.log('CONTEXT EMPTY');
+            context = {files:listDirectory(config.uploadDir)};
+        }
+        app.locals.context = null;
+        res.render('filelist', context);
+    });
 
 
-    // *** List transactions
-    router.get('/transactionlist', function(req, res, next){
-        res.render('transactionlist', {});
-    })
 
     // *** Upload files
-    router.post('/upload', function(req, res, next){
-        console.log('upload start');
+    router.post('/upload', function(req, res){
+        console.log('[ROUTER] Uploading file');
         if (!req.files.uppFile) {
-            console.log('file not found');
-            
-            res.render('filelist', {error:'No file selected', files:listDirectory(config.uploadDir)});            
-            return;
+            console.log('[ROUTER] ...File not found');            
+            app.locals.context =  {error: ['No file selected'], files:listDirectory(config.uploadDir)};                                  
+            res.redirect(303, '/filelist');
+            return;      
         }
         var file = req.files.uppFile;
         file.mv(config.uploadDir + file.name, function(err) {
@@ -39,37 +38,57 @@ module.exports = function(express, app, config, junk,connection,csvParser){
                 res.status(500).send(err);
             }
             else {
-                res.redirect('/filelist');
+                app.locals.context = {status: ['File ' + file.name + ' uploaded'], files:listDirectory(config.uploadDir)};
+                res.redirect(303, '/filelist');      
             }
-        })
-        
-    })
+        })      
+    });
     
     // *** Import csv
     router.get('/import', function(req, res, next){
         
-        //om filer finns
+        var errorMsg = [];
+        var statusMsg = [];
+
         var files_ = listDirectory(config.uploadDir);        
         if(files_.length > 0){
             files_.forEach(function(file){                        
-                importCsv(file, function(err){
+                importCsv(file, function(err, status){
                     console.log('[ROUTES] callback')
                     if(err){
-                        console.log('[ROUTES] Error during import');
-                        res.render('filelist', {error:"There was a problem with import", files:listDirectory(config.uploadDir)});                                    
-                    }else{
+                        console.log('[ROUTES] Error during import');                        
+                        errorMsg.push(err);                        
+                        app.locals.context =  {error: errorMsg, files:listDirectory(config.uploadDir)};       
+                        res.redirect(303, '/filelist');    
+
+                    }if(status){
                         console.log('[ROUTES] Import success');
-                        res.render('filelist', {status:"Import OK", files:listDirectory(config.uploadDir)});            
+                        statusMsg = statusMsg.concat(status);                        
                     }
-                });
-            //annars 
-                //returnera med error om fil saknas
+                });            
             });
+
+            
         }else{     
             console.log("found no files to import " + Object.prototype.toString.call(files_));       
-            res.render('filelist', {error:"There are no files to import", files:listDirectory(config.uploadDir)});
+            app.locals.context =  {error: ['There are no files to import'], files:listDirectory(config.uploadDir)};       
+            res.redirect(303, '/filelist');    
+            return;            
         }
+        
+        
+        app.locals.context =  {error: errorMsg, status:statusMsg, files:listDirectory(config.uploadDir)};   
+        res.redirect(303, '/filelist');      
     })
+
+
+
+    
+    // *** List transactions
+    router.get('/transactionlist', function(req, res, next){
+        res.render('transactionlist', {});
+    })
+
 
    app.use('/', router);
 }

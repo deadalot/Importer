@@ -32,7 +32,7 @@ coverage
 build/Release
 
 # Dependency directories
-import
+impex
 node_modules
 jspm_packages
 

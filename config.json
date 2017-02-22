@@ -1,10 +1,10 @@
 {
     "host":"localhost",
     "port":"8081", 
-    "importDir" :"./import",
-    "uploadDir" :"./import/upload/",
-    "processDir":"./import/processing/",
-    "historyDir":"./import/history/",
+    "importDir" :"./impex",
+    "uploadDir" :"./impex/upload/",
+    "processDir":"./impex/processing/",
+    "historyDir":"./impex/history/",
     "db":{
         "host":"localhost",
         "port":"3307",
