@@ -37,10 +37,9 @@ console.log('[APP] Server running on Port', config.port);
 
 function init(config, fs){
 
-    console.log("[INIT] Check if import folders exist");
-    
-    if (!fs.existsSync(__dirname + config.importFolder)) {
-        fs.mkdir(__dirname + config.importFolder, function(err){
+    console.log("[INIT] Check if import folders exist");   
+    if (!fs.existsSync(config.importDir)) {
+        fs.mkdir(config.importDir, function(err){
             if(err){
                 return console.error(err);
             }
@@ -49,24 +48,24 @@ function init(config, fs){
     }  
 
 
-    if (!fs.existsSync(__dirname + config.importFolder + config.uploadFolder)) {
-        fs.mkdir(__dirname + config.importFolder + config.uploadFolder, function(err){
+    if (!fs.existsSync(config.uploadDir)) {
+        fs.mkdir(config.uploadDir, function(err){
             if(err){
                 return console.error(err);
             }
             console.log("[INIT] uploadFolder successfully created");
         })
     }    
-    if (!fs.existsSync(__dirname + config.importFolder + config.processingFolder)) {
-        fs.mkdir(__dirname + config.importFolder + config.processingFolder, function(err){
+    if (!fs.existsSync(config.processDir)) {
+        fs.mkdir(config.processDir, function(err){
             if(err){
                 return console.error(err);
             }
             console.log("[INIT] processingFolder successfully created");
         })
     }  
-    if (!fs.existsSync(__dirname + config.importFolder + config.historyFolder)) {
-        fs.mkdir(__dirname + config.importFolder + config.historyFolder, function(err){
+    if (!fs.existsSync(config.historyDir)) {
+        fs.mkdir(config.historyDir, function(err){
             if(err){
                 return console.error(err);
             }

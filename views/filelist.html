@@ -16,9 +16,10 @@
             <form ref="uploadForm" id="uploadForm" action="http://localhost:8081/upload" method="POST" encType="multipart/form-data">
                 <input type="file" name="uppFile" autocomplete="off">
                 <input type='submit' value='Upload' />
-            </form>
-            {{fileError}}
+            </form>            
         </div>
+        <div class="up-error" style="color:red;">{{error}}</div>
+        <div class="up-error" style="color:green;">{{status}}</div>
         <div class="up-filelist">
             Uploaded files:
             {{#files}}

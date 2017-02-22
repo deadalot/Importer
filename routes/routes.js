@@ -2,18 +2,20 @@ module.exports = function(express, app, config, junk,connection,csvParser){
     var router = express.Router();
     var dateFormat = require('dateformat');
 
+    var importCsv = require('../import/importCsv.js');
+
     // *** index.html
     router.get('/', function(req, res, next){
         res.render('index', {});
     })
 
 
+    function fileListCtrl(req, res){
+        
+    }
     // *** List files and upload
     router.get('/filelist', function(req, res, next){        
-        var files_ = fs.readdirSync(config.uploadDir);
-        //var files_ = ['test1.txt', 'test2.cvs'];
-        //console.log();             
-        res.render('filelist', {files:files_.filter(junk.not)});
+        res.render('filelist', {files:listDirectory(config.uploadDir)});
     })
 
 
@@ -24,9 +26,11 @@ module.exports = function(express, app, config, junk,connection,csvParser){
 
     // *** Upload files
     router.post('/upload', function(req, res, next){
+        console.log('upload start');
         if (!req.files.uppFile) {
-            var files_ = fs.readdirSync(config.uploadDir);
-            res.render('filelist', {fileError:'No file selected', files:files_});            
+            console.log('file not found');
+            
+            res.render('filelist', {error:'No file selected', files:listDirectory(config.uploadDir)});            
             return;
         }
         var file = req.files.uppFile;
@@ -43,122 +47,35 @@ module.exports = function(express, app, config, junk,connection,csvParser){
     
     // *** Import csv
     router.get('/import', function(req, res, next){
-
-        var importDate;
-        var newFileName;
-        var files_ = fs.readdirSync(config.uploadDir);
-        files_ = files_.filter(junk.not);
         
-        files_.forEach(function(file){
-            importDate = new Date();
-            newFileName = file + "_" +dateFormat(importDate, 'yyyymmdd_HHMMss');
-            console.log('[IMPORT] Processing file ' + file + ' at ' + importDate);
-            
-            //** Move file to processing folder.
-            fs.rename(config.uploadDir + file, config.processDir + newFileName, function(err){
-                if(err){
-                    console.log(err);
-                }else{
-                    console.log('[IMPORT] File ' + newFileName + ' renamed and moved to Processing');
-                }
-            });
-
-            //** Read CSV file
-            fs.readFile(config.processDir + newFileName, {
-                encoding: 'utf-8'
-                }, function(err, csvData) {
-                if (err) {
-                    console.log(err);
-                }
-
-                csvParser(csvData, {
-                        delimiter: ','
-                    }, function(err, data) {
-                        if (err) {
-                        console.log(err);
-                    } else {
-                        //Verify data    
-                        console.log(data);
-                        //saveFile(connection, newFileName, 0, 0);
-                        var post  = {Filename: newFileName, TotalNumberOfRows: 0, RowsWithErrors:0};
-                        var query = connection.query('INSERT INTO File SET ?', post, function(err, result) {
-                            if(err){
-                                res.send(err);
-                            }else{
-                                res.send("[DB] File: Update complete");
-                            }
-                        });
-                        //Save to DB
+        //om filer finns
+        var files_ = listDirectory(config.uploadDir);        
+        if(files_.length > 0){
+            files_.forEach(function(file){                        
+                importCsv(file, function(err){
+                    console.log('[ROUTES] callback')
+                    if(err){
+                        console.log('[ROUTES] Error during import');
+                        res.render('filelist', {error:"There was a problem with import", files:listDirectory(config.uploadDir)});                                    
+                    }else{
+                        console.log('[ROUTES] Import success');
+                        res.render('filelist', {status:"Import OK", files:listDirectory(config.uploadDir)});            
                     }
                 });
+            //annars 
+                //returnera med error om fil saknas
             });
-        
-            console.log('Import of file ' + newFileName + ' is complete');
-            
-
-            //** Move file to history folder.
-            fs.rename(config.processDir + newFileName, config.historyDir + newFileName, function(err){
-                if(err){
-                    console.log(err);
-                }else{
-                    console.log('[IMPORT] File ' + newFileName + ' moved to History. Import Done');
-                }
-            });
-            
-        });
-    
-//TODO for each file
- /*
-    var fileName = 'test1.csv';
-    fs.readFile(__dirname + '/..' + config.importFolder + config.uploadFolder + '/' + fileName, {
-        encoding: 'utf-8'
-        }, function(err, csvData) {
-        if (err) {
-            console.log(err);
+        }else{     
+            console.log("found no files to import " + Object.prototype.toString.call(files_));       
+            res.render('filelist', {error:"There are no files to import", files:listDirectory(config.uploadDir)});
         }
-
-        csvParser(csvData, {
-            delimiter: ','
-        }, function(err, data) {
-            if (err) {
-            console.log(err);
-            } else {
-            console.log(data);
-
-            
-
-            }
-        });
-    });
-*/
-        //Spara i DB
-        /*
-        var post  = {Filename: "testfile1.txt", TotalNumberOfRows: 10, RowsWithErrors:5};
-        var query = connection.query('INSERT INTO file SET ?', post, function(err, result) {
-            if(err){
-                res.send(err);
-            }else{
-                res.send("import complete");
-            }
-        });
-*/
-        //flytta filer till history
     })
 
    app.use('/', router);
 }
 
-
-
-function saveFile(connection, fileName, nrRows, nrError){
-    
-
-}
-
-function saveTransaction(){
-
-}
-
-function saveTransactionDescription(){
-
+function listDirectory(path){
+    var files_ = fs.readdirSync(path);
+    files_.filter(junk.not);
+    return files_;
 }

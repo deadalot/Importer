@@ -1,12 +1,14 @@
 {
     "host":"localhost",
-    "port":"8081",   
-    "uploadDir":"./import/upload/",
+    "port":"8081", 
+    "importDir" :"./import",
+    "uploadDir" :"./import/upload/",
     "processDir":"./import/processing/",
     "historyDir":"./import/history/",
     "db":{
         "host":"localhost",
-        "user":"root",
+        "port":"3307",
+        "user":"deadalot",
         "password":"hejhej1",
         "database":"importer"
     }
