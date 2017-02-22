@@ -12,9 +12,9 @@ module.exports = function(express, app, config, junk,connection,csvParser){
     // *** List files and upload
     router.get('/filelist', function(req, res){
         var context = app.locals.context; 
-        console.log('[ROUTER] context: ' + JSON.stringify(context));       
+        console.log('[ROUTER] FILELIST: context: ' + context);       
         if(!context){
-            console.log('CONTEXT EMPTY');
+            console.log('[ROUTER] FILELIST: context: EMPTY');
             context = {files:listDirectory(config.uploadDir)};
         }
         app.locals.context = null;
@@ -52,35 +52,28 @@ module.exports = function(express, app, config, junk,connection,csvParser){
 
         var files_ = listDirectory(config.uploadDir);        
         if(files_.length > 0){
-            files_.forEach(function(file){                        
-                importCsv(file, function(err, status){
-                    console.log('[ROUTES] callback')
-                    if(err){
-                        console.log('[ROUTES] Error during import');                        
-                        errorMsg.push(err);                        
-                        //app.locals.context =  {error: errorMsg, files:listDirectory(config.uploadDir)};       
-                        //res.redirect(303, '/filelist');
-                        
-
-                    }if(status){
-                        console.log('[ROUTES] Import success');
-                        statusMsg = statusMsg.concat(status);                        
-                    }
-                });            
-            });
-
+            //files_.forEach(function(file){    
+            //for (var i = 0; i < files_.length; i++){                    
+                importCsv(files_[0], connection, function(err, status){
+                    console.log('[ROUTES] callback');                    
+                        errorMsg = errorMsg.concat(err);
+                        statusMsg = statusMsg.concat(status);                                               
+                        console.log('********************* import stuff done for this file. Message: ' + statusMsg);
+                        app.locals.context =  {error: errorMsg, status:statusMsg, files:listDirectory(config.uploadDir)};       
+                        res.redirect(303, '/filelist');          
+                });                    
+                
+            //}
             
         }else{     
-            console.log("found no files to import " + Object.prototype.toString.call(files_));       
+            console.log("** found no files to import " + Object.prototype.toString.call(files_));       
             app.locals.context =  {error: ['There are no files to import'], files:listDirectory(config.uploadDir)};       
-            res.redirect(303, '/filelist');    
-            return;            
+            res.redirect(303, '/filelist');                
         }
         
-        
-        app.locals.context =  {error: errorMsg, status:statusMsg, files:listDirectory(config.uploadDir)};   
-        res.redirect(303, '/filelist');      
-    })
+        //app.locals.context =  {error: errorMsg, status:statusMsg, files:listDirectory(config.uploadDir)};   
+        //res.redirect(303, '/filelist');      
+    });
 
 
 
