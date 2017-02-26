@@ -3,25 +3,49 @@
 <head>
     <meta charset="UTF-8">
     <title>{{title}}</title>
-    <link rel="stylesheet" href="../css/home.css">
+    <link rel="stylesheet" href="../css/transactions.css">
 </head>
 <body>
     <div class="tl-container">
         <h1 class="tl-title">Transaction List</h1>
+        <div class="back-button"><a href="/"><img src="../images/back-button.png"></a></div>
         <div class="tl-description">            
             <p>Below are all imported reccords</p>
         </div>
         
-        <div class="up-transactionlist">
-            <ul class="transactionlist">asdasdasd | asdfsfsdf | sdfsdfsdf | dsfsdfsd</ul>
-            <ul class="transactionlist">asdasdasd | asdfsfsdf | sdfsdfsdf | dsfsdfsd</ul>
-            <ul class="transactionlist">asdasdasd | asdfsfsdf | sdfsdfsdf | dsfsdfsd</ul>
-            <ul class="transactionlist">asdasdasd | asdfsfsdf | sdfsdfsdf | dsfsdfsd</ul>
-            <ul class="transactionlist">asdasdasd | asdfsfsdf | sdfsdfsdf | dsfsdfsd</ul>
-            <ul class="transactionlist">asdasdasd | asdfsfsdf | sdfsdfsdf | dsfsdfsd</ul>
-            <ul class="transactionlist">asdasdasd | asdfsfsdf | sdfsdfsdf | dsfsdfsd</ul>
+        <div class="caption">Transactions</div>	
+        <div id="table">
+            <div class="header-row row">
+                <span class="cell primary">ID</span>
+                <span class="cell">TransactionDate</span>
+                <span class="cell">Amount</span>
+                <span class="cell">Description</span>
+                <span class="cell">StartDate</span>
+                <span class="cell">EndDate</span>
+                <span class="cell">Filename</span>
+            </div>
+            {{#transactions}}
+            <div class="row">              
+                <span class="cell primary" data-label="TransactionID">{{TransactionID}}</span>
+                <span class="cell" data-label="TransactionDate">{{TransactionDate}}</span>
+                <span class="cell" data-label="Amount">{{Amount}}</span>
+                <span class="cell" data-label="Description">{{Description}}</span>
+                <span class="cell" data-label="StartDate">{{StartDate}}</span>
+                <span class="cell" data-label="EndDate">{{EndDate}}</span>
+                <span class="cell" data-label="Filename">{{Filename}}</span>
+            </div>
+            {{/transactions}}  
+        
         </div>
+        
     </div>
+
+
+
+
+
 
 </body>
 </html>
+
+

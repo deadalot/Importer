@@ -77,7 +77,19 @@ module.exports = function(express, app, config, junk,connection,csvParser){
     
     // *** List transactions
     router.get('/transactionlist', function(req, res, next){
-        res.render('transactionlist', {});
+        var sql =   'SELECT t.TransactionID, DATE_FORMAT(t.TransactionDate, "%Y-%m-%d") as TransactionDate, t.Amount, td.Description, DATE_FORMAT(f.StartDate, "%Y-%m-%d %H:%i:%s") as StartDate, DATE_FORMAT(f.EndDate, "%Y-%m-%d %H:%i:%s") as EndDate, f.Filename ' +
+                    'FROM File f, TransactionDescription td, Transaction t ' +
+                    'WHERE t.TransactionDescriptionPK = td.TransactionDescriptionPK ' +
+                    'AND t.FilePK = f.Filename ORDER BY t.TransactionID';
+        connection.query(sql, function (err, result, fields) {    
+            if(err){
+                console.log('Select ERROR ' + err);
+            }else{
+                console.log('Select: ' + JSON.stringify(result));
+                res.render('transactionlist', {transactions: result});        
+            }
+        });
+        
     })
 
 

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>{{title}}</title>
-    <link rel="stylesheet" href="../css/home.css">
+    <link rel="stylesheet" href="../css/filelist.css">
     
 </head>
 <body>
@@ -11,26 +11,35 @@
         <h1 class="up-title">Upload Files</h1>
         <div class="up-description">            
             <p>Upload .csv files and import to database</p>
+            <p><a href="/">back</a> | <a href="/transactionlist">transactions</a></p>            
         </div>
-        <div class="up-fileupload">
+        <div class="upload">
             <form ref="uploadForm" id="uploadForm" action="http://localhost:8081/upload" method="POST" encType="multipart/form-data">
-                <input type="file" name="uppFile" autocomplete="off">
+                <input type="file" name="uppFile" autocomplete="off" >
                 <input type='submit' value='Upload' />
             </form>            
         </div>
-        {{#status}}
-        <div class="up-status" style="color:green;">{{.}}</div>
-        {{/status}}   
-        {{#error}}
-        <div class="up-error" style="color:red;">{{.}}</div>
-        {{/error}}   
-       
+        <div id="table">            
+            {{#status}}
+            <div class="row-status">
+                <span class="cell primary" data-label="Message">{{.}}</span>
+            </div>
+            {{/status}}
+            {{#error}}
+            <div class="row-error">
+                <span class="cell primary" data-label="Error">{{.}}</span>
+            </div>
+            {{/error}}        
+        </div>
         
-        <div class="up-filelist">
-            Uploaded files:
-            {{#files}}
-                <ul class="filelist">{{.}}</ul>
-            {{/files}}            
+        <div id="file-table">
+            <div class="file-caption">Uploaded files:</div>            
+             {{#files}}
+            <div class="row-files">
+                <span class="cell primary" data-label="Files">{{.}}</span>
+            </div>
+            {{/files}}   
+                     
         </div>
         <div>
             Import files:
