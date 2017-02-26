@@ -69,10 +69,7 @@ module.exports = function(express, app, config, junk,connection,csvParser){
             console.log("** found no files to import " + Object.prototype.toString.call(files_));       
             app.locals.context =  {error: ['There are no files to import'], files:listDirectory(config.uploadDir)};       
             res.redirect(303, '/filelist');                
-        }
-        
-        //app.locals.context =  {error: errorMsg, status:statusMsg, files:listDirectory(config.uploadDir)};   
-        //res.redirect(303, '/filelist');      
+        }        
     });
 
 
