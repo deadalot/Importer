@@ -2,19 +2,17 @@ module.exports = function(express, app, config, junk,connection,csvParser){
     var router = express.Router();
     var dateFormat = require('dateformat');
     var importCsv = require('../import/importCsv.js');
+    var async = require("async");
 
-    // *** index.html
     router.get('/', function(req, res, next){
-        res.render('index', {});
-    })
+        //res.render('index', {});
+        res.redirect(303, '/filelist');
+    });
 
 
-    // *** List files and upload
     router.get('/filelist', function(req, res){
         var context = app.locals.context; 
-        console.log('[ROUTER] FILELIST: context: ' + context);       
-        if(!context){
-            console.log('[ROUTER] FILELIST: context: EMPTY');
+        if(!context){            
             context = {files:listDirectory(config.uploadDir)};
         }
         app.locals.context = null;
@@ -22,12 +20,8 @@ module.exports = function(express, app, config, junk,connection,csvParser){
     });
 
 
-
-    // *** Upload files
     router.post('/upload', function(req, res){
-        console.log('[ROUTER] Uploading file');
-        if (!req.files.uppFile) {
-            console.log('[ROUTER] ...File not found');            
+        if (!req.files.uppFile) {          
             app.locals.context =  {error: ['No file selected'], files:listDirectory(config.uploadDir)};                                  
             res.redirect(303, '/filelist');
             return;      
@@ -44,38 +38,35 @@ module.exports = function(express, app, config, junk,connection,csvParser){
         })      
     });
     
-    // *** Import csv
+   
     router.get('/import', function(req, res, next){
         
         var errorMsg = [];
         var statusMsg = [];
-
         var files_ = listDirectory(config.uploadDir);        
+        
         if(files_.length > 0){
-            //files_.forEach(function(file){    
-            //for (var i = 0; i < files_.length; i++){                    
-                importCsv(files_[0], connection, function(err, status){
-                    console.log('[ROUTES] callback');                    
-                        errorMsg = errorMsg.concat(err);
-                        statusMsg = statusMsg.concat(status);                                               
-                        console.log('********************* import stuff done for this file. Message: ' + statusMsg);
-                        app.locals.context =  {error: errorMsg, status:statusMsg, files:listDirectory(config.uploadDir)};       
-                        res.redirect(303, '/filelist');          
+            async.forEach(files_, function(file, callback){
+                console.log('[ROUTES] Import file ' + file);                   
+                importCsv(file, connection, function(err, status){                    
+                    errorMsg = errorMsg.concat(err);
+                    statusMsg = statusMsg.concat(status);
+                    statusMsg = statusMsg.concat([' ']);;
+                    callback();    
                 });                    
                 
-            //}
+            }, function(err){                
+                app.locals.context =  {error: errorMsg, status:statusMsg, files:listDirectory(config.uploadDir)};       
+                res.redirect(303, '/filelist');          
+            });
             
-        }else{     
-            console.log("** found no files to import " + Object.prototype.toString.call(files_));       
+        }else{
             app.locals.context =  {error: ['There are no files to import'], files:listDirectory(config.uploadDir)};       
             res.redirect(303, '/filelist');                
         }        
     });
 
 
-
-    
-    // *** List transactions
     router.get('/transactionlist', function(req, res, next){
         var sql =   'SELECT t.TransactionID, DATE_FORMAT(t.TransactionDate, "%Y-%m-%d") as TransactionDate, t.Amount, td.Description, DATE_FORMAT(f.StartDate, "%Y-%m-%d %H:%i:%s") as StartDate, DATE_FORMAT(f.EndDate, "%Y-%m-%d %H:%i:%s") as EndDate, f.Filename ' +
                     'FROM File f, TransactionDescription td, Transaction t ' +
@@ -83,14 +74,12 @@ module.exports = function(express, app, config, junk,connection,csvParser){
                     'AND t.FilePK = f.Filename ORDER BY t.TransactionID';
         connection.query(sql, function (err, result, fields) {    
             if(err){
-                console.log('Select ERROR ' + err);
-            }else{
-                console.log('Select: ' + JSON.stringify(result));
+                console.log('[ROUTES] Error selectiong transactions: ' + err);
+            }else{                
                 res.render('transactionlist', {transactions: result});        
             }
-        });
-        
-    })
+        });        
+    });
 
 
    app.use('/', router);
@@ -98,6 +87,6 @@ module.exports = function(express, app, config, junk,connection,csvParser){
 
 function listDirectory(path){
     var files_ = fs.readdirSync(path);
-    files_.filter(junk.not);
+    files_.filter(junk.not); //filter junk like .DS_Store
     return files_;
 }

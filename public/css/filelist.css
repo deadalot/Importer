@@ -8,8 +8,20 @@ body {
   color: #444;
   background: #eee;
 }
-.back-button img{
-    width: 40px;
+.up-transaction p a{
+	  color: #eee;
+	  text-decoration: none;
+	  padding-left: 4px;
+	  
+}
+.up-transaction{	
+	background: #34495E;
+	font-style: bold;
+	
+    width: 105px;
+	height: 30px;
+	line-height:30px;
+	border-radius:5px;
 }
 
 .upload{

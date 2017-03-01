@@ -4,11 +4,9 @@ drop table TransactionDescription;
 drop table file;
 drop table Transaction;
 
-
 select * from TransactionDescription;
 select * from Transaction;
 select * from file order by CreationDate desc;
-
 
 
 CREATE TABLE File (
@@ -20,7 +18,6 @@ CREATE TABLE File (
   CreationDate TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (Filename)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
-
 
 CREATE TABLE TransactionDescription (
   TransactionDescriptionPK INT NOT NULL UNIQUE AUTO_INCREMENT,
