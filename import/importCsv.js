@@ -44,9 +44,9 @@ var importCsv = function importCsv(file, connection, callback){
         async.forEach(data, function(row, callback){
             rowCount++;             
             
-            if((Object.keys(row).length) > 4){
+            if((Object.keys(row).length) != 4){
                console.log('[IMPORT] Error on row ' + rowCount);
-               logMsg(errorMsg, 'ERROR', 'Row ' + rowCount + ': To many fields');
+               logMsg(errorMsg, 'ERROR', 'Row ' + rowCount + ': Incorrect number of fields');
                errorCount++;
                return callback();    
             }
