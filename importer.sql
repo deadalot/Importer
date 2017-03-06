@@ -1,13 +1,4 @@
-alter table Transaction drop foreign key transaction_ibfk_1;
-alter table Transaction drop foreign key transaction_ibfk_2;
-drop table TransactionDescription;
-drop table file;
-drop table Transaction;
-
-select * from TransactionDescription;
-select * from Transaction;
-select * from file order by CreationDate desc;
-
+CREATE DATABASE importer CHARACTER SET utf8 COLLATE utf8_general_ci;
 
 CREATE TABLE File (
   Filename VARCHAR(255) NOT NULL UNIQUE,
