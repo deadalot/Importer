@@ -26,7 +26,7 @@ app.use(fileUpload());
 
 init(config, fs);
 
-require('./routes/routes.js')(express, app, config, junk, connection, csvParser);
+require('./routes/routes.js')(express, app, config, junk, connection);
 
 app.listen(config.port, function(){
 console.log('[APP] Server running on Port', config.port);

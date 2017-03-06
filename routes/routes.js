@@ -1,4 +1,4 @@
-module.exports = function(express, app, config, junk,connection,csvParser){
+module.exports = function(express, app, config, junk,connection){
     var router = express.Router();
     var dateFormat = require('dateformat');
     var importCsv = require('../import/importCsv.js');
