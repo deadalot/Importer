@@ -5,9 +5,7 @@ var express = require('express'),
     fs = require('fs'),
     fileUpload = require('express-fileupload'),
     mysql      = require('mysql'),
-    junk = require('junk'),
-    csvParser = require('csv-parse');
-
+    junk = require('junk')
 
 var connection = mysql.createConnection(config.db);
 
